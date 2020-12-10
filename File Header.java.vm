@@ -1,0 +1,67 @@
+#set( $USER = "S. Mahdi Mir-Ismaili" )
+#set( $URL = "https://mirismaili.github.io" )
+##// Calculate Jalali date (Inspired from https://stackoverflow.com/a/24968711/5318303)
+##
+#set($gDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
+#set($jDaysInMonth = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29])
+##
+#set($Integer = 0)
+## INCORRECT WAY: 
+## INCORRECT WAY: #set($i = $DATE.indexOf("/"))
+## INCORRECT WAY: #set($gDay = $Integer.parseInt($DATE.substring(0,$i)))
+## INCORRECT WAY: ##
+## INCORRECT WAY: #set($i = $i+1)
+## INCORRECT WAY: #set($j = $DATE.indexOf("/", $i))
+## INCORRECT WAY: #set($gMonth = $Integer.parseInt($DATE.substring($i,$j)))
+## INCORRECT WAY: ##
+## INCORRECT WAY: #set($j = $j+1)
+## INCORRECT WAY: #set($gYear = $Integer.parseInt($DATE.substring($j)))
+## INCORRECT WAY: ##
+##
+#set( $gYear = $Integer.parseInt($YEAR) - 1600 )
+#set( $gMonth = $Integer.parseInt($MONTH) - 1 )
+#set( $gDay = $Integer.parseInt($DAY) - 1)
+##
+#set( $gDayNo = 365*$gYear + ($gYear+3)/4 - ($gYear+99)/100 + ($gYear+399)/400)
+##
+#set( $i = 0 )
+#foreach( $n in $gDaysInMonth )
+    #if( $i < $gMonth )
+        #set( $gDayNo = $gDayNo + $n )
+        #set( $i = $i + 1 )
+    #end
+#end
+##
+#if( $gMonth>1 && ($gYear%4==0 && $gYear%100!=0 || $gYear%400==0))
+    #set( $gDayNo = $gDayNo + 1 )
+#end
+##
+#set( $gDayNo = $gDayNo + $gDay )
+##
+#set( $jDayNo = $gDayNo - 79 )
+##
+#set( $jNP = $jDayNo / 12053 )
+#set( $jDayNo = $jDayNo % 12053 )
+##
+#set( $jYear = 979 + 33*$jNP + 4*($jDayNo/1461) )
+#set( $jDayNo = $jDayNo % 1461 )
+##
+#if( $jDayNo >= 366 )
+    #set( $jdNo_1 = $jDayNo - 1 )
+    #set( $jYear = $jYear + $jdNo_1 / 365 )
+    #set( $jDayNo = $jdNo_1 % 365 )
+#end
+##
+#set( $i = 0 )
+#foreach( $n in $jDaysInMonth )
+    #if( $i<11 && $jDayNo >= $jDaysInMonth[$i] )
+        #set( $jDayNo = $jDayNo - $jDaysInMonth[$i] )
+        #set( $i = $i + 1 )
+    #end
+#end
+##
+#set( $jMonth = $i )
+#set( $jDay = $jDayNo + 1 )
+##
+#set( $jDATE = "$jYear/" + ($jMonth+1) + "/$jDay" )
+#set( $gDATE = "$Integer.parseInt($YEAR)/$Integer.parseInt($MONTH)/$Integer.parseInt($DAY)" )
